@@ -1,6 +1,41 @@
 return {
 
   {
+    "windwp/nvim-ts-autotag",
+    event = "VeryLazy",
+    config = function()
+      require('nvim-ts-autotag').setup({
+        -- Global settings
+        enable = true, -- Enable autotag globally
+        filetypes = {
+          "html", "javascript", "javascriptreact", "typescriptreact", "vue", "xml", "php", "markdown"
+        },
+        -- Options
+        opts = {
+          enable_close = true, -- Auto close tags
+          enable_rename = true, -- Auto rename pairs of tags
+          enable_close_on_slash = true -- Auto close on trailing </
+        },
+        -- Per filetype override (if needed)
+        per_filetype = {
+          html = {
+            enable_close = true,
+            enable_rename = true
+          },
+          javascriptreact = {
+            enable_close = true,
+            enable_rename = true
+          },
+          typescriptreact = {
+            enable_close = true,
+            enable_rename = true
+          }
+        }
+      })
+    end,
+  },  
+
+  {
     "kyazdani42/nvim-tree.lua",
     requires = "kyazdani42/nvim-web-devicons", -- Optional, for file icons
     config = function()
@@ -8,6 +43,9 @@ return {
         view = {
           adaptive_size = true,  -- Automatically adjusts the width based on the longest file name
         },
+        -- git = {
+        --   enable = false,
+        -- },
       })
     end,
   },
@@ -273,5 +311,5 @@ return {
       })
     end,
     event = "VeryLazy",
-  }
+  },
 }

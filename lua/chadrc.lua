@@ -1,13 +1,13 @@
 local options = {
 
 	base46 = {
-	  theme = "catppuccin", -- default theme
+	  theme = "chadracula-evondev", -- default theme
 	  hl_add = {},
 	  hl_override = {},
 	  integrations = {},
 	  changed_themes = {},
 	  transparency = false,
-	  theme_toggle = { "catppuccin", "chadracula-evondev" },
+	  theme_toggle = { "doomchad", "chadracula-evondev" },
 	},
 
 	ui = {
