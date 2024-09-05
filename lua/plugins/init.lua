@@ -1,5 +1,7 @@
 return {
 
+
+  -- Auto Tags for HTML
   {
     "windwp/nvim-ts-autotag",
     event = "VeryLazy",
@@ -8,7 +10,7 @@ return {
         -- Global settings
         enable = true, -- Enable autotag globally
         filetypes = {
-          "html", "javascript", "javascriptreact", "typescriptreact", "vue", "xml", "php", "markdown"
+          "html", "javascript", "javascriptreact", "typescriptreact", "vue", "xml", "php", "markdown", "typescript", "go"
         },
         -- Options
         opts = {
@@ -35,6 +37,8 @@ return {
     end,
   },  
 
+
+  -- File Tree
   {
     "kyazdani42/nvim-tree.lua",
     requires = "kyazdani42/nvim-web-devicons", -- Optional, for file icons
@@ -43,12 +47,13 @@ return {
         view = {
           adaptive_size = true,  -- Automatically adjusts the width based on the longest file name
         },
-        -- git = {
-        --   enable = false,
-        -- },
+        git = {
+          enable = true,
+        },
       })
     end,
   },
+
 
   -- References
   -- LSP: https://github.com/neovim/nvim-lspconfig
@@ -70,7 +75,6 @@ return {
         "golines",
         "goimports",
         "delve",           -- Go debugger
-        
   
         -- JavaScript/TypeScript tools
         "typescript-language-server", -- JS/TS language server
@@ -79,8 +83,9 @@ return {
         "js-debug-adapter",           -- JavaScript debugger
 
         -- C/C++
-        "clangd",           -- C/C++ LSP
-        "clang-format",     -- C/C++ formatter
+        "cpplint",
+        -- "clangd",           -- C/C++ LSP
+        -- "clang-format",     -- C/C++ formatter
 
         -- Python
         "pyright",  -- Python LSP
@@ -90,13 +95,23 @@ return {
     },
   },
 
+
+
+  {
+    "rainbowhxch/beacon.nvim",
+    event = "VeryLazy",
+  },
+
+
+  -- Format on Save
   {
     "stevearc/conform.nvim",
     event = 'BufWritePre', -- uncomment for format on save
     opts = require "configs.conform",
   },
 
-  -- These are some examples, uncomment them if you want to see them work!
+
+  -- LSP
   {
     "neovim/nvim-lspconfig",
     config = function()
@@ -104,6 +119,7 @@ return {
     end,
   },
 
+  -- Tree-sitter
   {
     "nvim-treesitter/nvim-treesitter",
 	  opts = {
@@ -114,10 +130,15 @@ return {
         "javascript", "typescript",
         "cpp", "c", "python",
       },
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+      },
     },
   },
 
--- Gen Nvim Integration
+
+  -- Gen Nvim Integration
 {
   "David-Kunz/gen.nvim",
   lazy = false, -- Ensure the plugin loads immediately
@@ -190,7 +211,6 @@ return {
 },
 
 
-
   -- Noice integration
   {
     "folke/noice.nvim",
@@ -254,6 +274,7 @@ return {
     }
   },
 
+
   -- Notification setup
   {
     "rcarriga/nvim-notify",
@@ -272,6 +293,8 @@ return {
     end
   },
 
+
+  -- Auto Save setup
   {
     "Pocco81/auto-save.nvim",
     config = function()
@@ -279,26 +302,30 @@ return {
         enabled = true,
         execution_message = {
           message = function() -- message to print on save
-            return ("AutoSave: saved at " .. vim.fn.strftime("%H:%M:%S"))
+            return ("auto saved at " .. vim.fn.strftime("%H:%M:%S"))
           end,
           dim = 0.18, -- dim the color of `message`
           cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
         },
         trigger_events = {"InsertLeave", "TextChanged"}, -- vim events that trigger auto-save (see :h events)
-        -- function that determines whether to save the current buffer or not
-        -- return true: if buffer is ok to be saved
-        -- return false: if it's not ok to be saved
+        
         condition = function(buf)
           local fn = vim.fn
-          local utils = require("auto-save.utils.data")
+          local filetype = fn.getbufvar(buf, "&filetype")
+          local allowed_filetypes = { 
+            "lua", "javascript", "python", "markdown", "c", "cpp", "go", "html", "css", "typescript", "javascriptreact", "typescriptreact"
+          } -- specify allowed filetypes here
+          
   
+          -- Check if the buffer is modifiable and the filetype is in the allowed list
           if
             fn.getbufvar(buf, "&modifiable") == 1 and
-            utils.not_in(fn.getbufvar(buf, "&filetype"), {}) then
+            vim.tbl_contains(allowed_filetypes, filetype) then
             return true -- met condition(s), can save
           end
           return false -- can't save
         end,
+        
         write_all_buffers = false, -- write all buffers when the current one meets `condition`
         debounce_delay = 135, -- saves the file at most every `debounce_delay` milliseconds
         callbacks = { -- functions to be executed at different intervals
@@ -312,4 +339,8 @@ return {
     end,
     event = "VeryLazy",
   },
+
+
+  -- 
+  
 }

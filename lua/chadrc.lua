@@ -1,13 +1,13 @@
 local options = {
 
 	base46 = {
-	  theme = "chadracula-evondev", -- default theme
+	  theme = "bearded-arc", -- default theme
 	  hl_add = {},
 	  hl_override = {},
 	  integrations = {},
 	  changed_themes = {},
 	  transparency = false,
-	  theme_toggle = { "doomchad", "chadracula-evondev" },
+	  theme_toggle = { "tokyonight", "bearded-arc" },
 	},
 
 	ui = {
@@ -111,7 +111,7 @@ local options = {
   
 	cheatsheet = {
 	  theme = "grid", -- simple/grid
-	  excluded_groups = { "terminal (t)", "autopairs", "Nvim", "Opens" }, -- can add group name or with mode
+	--   excluded_groups = { "terminal (t)", "autopairs", "Nvim", "Opens" }, -- can add group name or with mode
 	},
   
 	mason = { cmd = true, pkgs = {} },
@@ -119,24 +119,3 @@ local options = {
   
 local status, chadrc = pcall(require, "chadrc")
 return vim.tbl_deep_extend("force", options, status and chadrc or {})
-
-
-
-
----> Old Config
--- -- This file needs to have same structure as nvconfig.lua 
--- -- https://github.com/NvChad/ui/blob/v2.5/lua/nvconfig.lua
-
--- ---@type ChadrcConfig
--- local M = {}
-
--- M.base46 = {
--- 	theme = "one_light",
-
--- 	-- hl_override = {
--- 	-- 	Comment = { italic = true },
--- 	-- 	["@comment"] = { italic = true },
--- 	-- },
--- }
-
--- return M
