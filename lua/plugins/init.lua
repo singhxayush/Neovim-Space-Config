@@ -138,79 +138,6 @@ return {
   },
 
 
-  -- Gen Nvim Integration
-{
-  "David-Kunz/gen.nvim",
-  lazy = false, -- Ensure the plugin loads immediately
-  opts = {
-    model = "llama3.1", -- Use your installed Llama model
-    display_mode = "split",
-    show_prompt = true,
-    show_model = true,
-    no_auto_close = false,
-    init = function(options) 
-      -- Attempt to start Ollama if it's not running
-      pcall(io.popen, "ollama serve > /dev/null 2>&1 &") 
-    end,
-    command = function(options)
-      local body = {
-        model = options.model,
-        messages = {{role = "user", content = options.prompt}},
-        stream = true -- Stream is set to true to handle incremental responses
-      }
-      -- Encode the JSON body safely for Zsh and curl
-      local json_body = vim.fn.json_encode(body)
-      -- Escape double quotes and newlines inside the JSON body for Zsh
-      local escaped_json_body = json_body:gsub('"', '\\"'):gsub('\n', '\\n')
-      local curl_cmd = string.format(
-        "curl --silent -X POST http://%s:%s/api/chat -H 'Content-Type: application/json' -d \"%s\"",
-        options.host or "localhost",
-        options.port or "11434",
-        escaped_json_body
-      )
-      -- Debug print the command
-      print(curl_cmd) -- Use this to verify the command
-      return curl_cmd
-    end,
-    debug = true
-  },
-  config = function(_, opts)
-    require("gen").setup(opts)
-    
-    -- Debug function
-    local function debug_print(msg)
-      vim.api.nvim_echo({{msg, "WarningMsg"}}, true, {})
-    end
-
-    -- Test function
-    local function test_gen()
-      local prompt = vim.fn.input("Enter your prompt: \n\n") -- Get user input
-      debug_print("Testing gen.nvim with Ollama...")
-      require("gen").exec("ollama", {
-        prompt = prompt, -- Use the captured prompt
-        model = "llama3.1",
-        override = {
-          display_mode = "float",
-        },
-        callback = function(response)
-          debug_print("Received response from Ollama")
-          vim.schedule(function()
-            print(vim.inspect(response))
-          end)
-        end,
-      })
-    end
-
-    -- Keymaps
-    vim.keymap.set('v', '<leader>g', ':Gen<CR>')
-    vim.keymap.set('n', '<leader>g', function()
-      require('gen').select_model()
-    end)
-    vim.keymap.set('n', '<leader>gt', test_gen, {desc = "Test gen.nvim"})
-  end
-},
-
-
   -- Noice integration
   {
     "folke/noice.nvim",
@@ -275,72 +202,22 @@ return {
   },
 
 
-  -- Notification setup
-  {
-    "rcarriga/nvim-notify",
-    config = function()
-      require("notify").setup({
-        stages = "fade_in_slide_out", -- Use slide animation
-        timeout = 3000, -- Duration of the notification
-        max_width = 80, -- Maximum width of notifications
-        max_height = 10, -- Maximum height of notifications
-        background_colour = "#000000", -- Background color
-        fps = 60, -- Frames per second
-        render = "default", -- Render style
-        top_down = false, -- Notifications will appear from bottom to top
-        minimum_width = 50, -- Set a minimum width for better centering
-      })
-    end
-  },
 
-
-  -- Auto Save setup
-  {
-    "Pocco81/auto-save.nvim",
-    config = function()
-      require("auto-save").setup({
-        enabled = true,
-        execution_message = {
-          message = function() -- message to print on save
-            return ("auto saved at " .. vim.fn.strftime("%H:%M:%S"))
-          end,
-          dim = 0.18, -- dim the color of `message`
-          cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
-        },
-        trigger_events = {"InsertLeave", "TextChanged"}, -- vim events that trigger auto-save (see :h events)
-        
-        condition = function(buf)
-          local fn = vim.fn
-          local filetype = fn.getbufvar(buf, "&filetype")
-          local allowed_filetypes = { 
-            "lua", "javascript", "python", "markdown", "c", "cpp", "go", "html", "css", "typescript", "javascriptreact", "typescriptreact"
-          } -- specify allowed filetypes here
-          
-  
-          -- Check if the buffer is modifiable and the filetype is in the allowed list
-          if
-            fn.getbufvar(buf, "&modifiable") == 1 and
-            vim.tbl_contains(allowed_filetypes, filetype) then
-            return true -- met condition(s), can save
-          end
-          return false -- can't save
-        end,
-        
-        write_all_buffers = false, -- write all buffers when the current one meets `condition`
-        debounce_delay = 135, -- saves the file at most every `debounce_delay` milliseconds
-        callbacks = { -- functions to be executed at different intervals
-          enabling = nil, -- ran when enabling auto-save
-          disabling = nil, -- ran when disabling auto-save
-          before_asserting_save = nil, -- ran before checking `condition`
-          before_saving = nil, -- ran before doing the actual save
-          after_saving = nil -- ran after doing the actual save
-        }
-      })
-    end,
-    event = "VeryLazy",
-  },
-
-
-  -- 
-  
+  -- {
+  --   "yamatsum/nvim-cursorline",
+  --   config = function()
+  --     require('nvim-cursorline').setup {
+  --       cursorline = {
+  --         enable = true,
+  --         timeout = 1000,
+  --         number = false,
+  --       },
+  --       cursorword = {
+  --         enable = true,
+  --         min_length = 3,
+  --         hl = { underline = true },
+  --       }
+  --     }
+  --   end,
+  -- }
 }
